@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dragon Hunt Baccarat</title>
+<meta name="description" content="Dragon Hunt baccarat side game: dealer control and LED wall with streak dragon, Top Hunters ranking and 3D gold dragon moments.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe4a2"/><stop offset="1" stop-color="#e2b24b"/></linearGradient>
+</defs></svg>
+
+<div class="app">
+  <!-- ============ DEALER CONTROL ============ -->
+  <section class="host" aria-label="Dealer control">
+    <div class="hcard">
+      <div class="hrow">
+        <div class="htitle"><small>DEALER CONTROL</small><b id="hTitle">DRAGON HUNT</b></div>
+        <div class="seg" id="tabs" role="group" aria-label="Table"><button type="button" id="tabBC1" aria-pressed="true">BC1</button><button type="button" id="tabBC2" aria-pressed="false">BC2</button></div>
+      </div>
+      <div class="hrow"><button class="pbtn gold wide" type="button" id="btnLive">Turn on LED · Start Dragon Hunt</button></div>
+      <div class="hrow"><span class="lbl">Session prize budget (both tables)</span><span class="num" id="capTxt">$0 / $5,000</span></div>
+      <div class="capbar"><i id="capBar"></i></div>
+      <div class="hrow"><label class="lbl" for="scheme">Prize plan</label>
+        <select id="scheme"><option value="AB">A + B (recommended)</option><option value="A">A</option><option value="CUR">Original rules</option></select></div>
+      <div class="hrow"><label class="lbl" for="feedMode">System screen window</label>
+        <select id="feedMode"><option value="green">Green key (live feed)</option><option value="black">Black (live feed)</option><option value="preview">Sample image</option></select></div>
+      <div class="hint">The LED leaves a 16:9 window at <b>x 48, y 28, 1200 × 675 px</b> of the 1920 × 1080 output. Place the table system's HDMI feed there in the video switcher or OBS: key out pure green (#00FF00), or layer the feed on the black window.</div>
+      <div class="hrow"><label class="lbl" for="fxMode">Dragon moments</label>
+        <select id="fxMode"><option value="video">3D gold dragon video</option><option value="coded">Coded dragon flight</option></select></div>
+      <div class="hrow"><label class="lbl" for="dstyle">Dragon style</label>
+        <select id="dstyle"><option value="gold3d">3D gold (from your video)</option><option value="papercut">Papercut · red &amp; gold</option><option value="classic">Classic · shaded</option></select></div>
+    </div>
+
+    <div class="hcard">
+      <div class="streakbox"><div><div class="lbl">Current streak · <span id="handTxt">Hand 0</span></div><b id="stTxt">—</b></div><span class="chipst" id="stChip">NORMAL</span></div>
+      <div class="lbl">1 · Tap a seat to seat or clear a guest</div>
+      <div class="seats" id="seats"></div>
+      <div class="mbs" id="mbs"></div>
+    </div>
+
+    <div class="hcard">
+      <div class="lbl">2 · Enter the result of the hand just played (from the table roadmap)</div>
+      <div class="results">
+        <button class="rbtn B" type="button" data-r="B" id="rB">BANKER</button>
+        <button class="rbtn T" type="button" data-r="T" id="rT">TIE</button>
+        <button class="rbtn P" type="button" data-r="P" id="rP">PLAYER</button>
+      </div>
+      <div class="hrow"><button class="pbtn wide" type="button" id="btnUndo">↶ Undo last result</button></div>
+    </div>
+
+    <div class="hcard prompt" id="prompt" hidden>
+      <h3 id="pTitle"></h3>
+      <p id="pTxt"></p>
+      <div class="warn" id="pWarn" hidden></div>
+      <div class="hrow"><button class="pbtn gold wide" type="button" id="btnConfirm">Confirm → LED</button><button class="pbtn" type="button" id="btnNone">No one qualifies</button></div>
+    </div>
+
+    <div class="hcard" id="demoCard">
+      <p class="narr" id="narr">Run the demo to watch a full session: check-in, Dragon Alert, dragons 6 to 8 flying across the LED, a dragon slain and the Top Hunters board.</p>
+      <div class="hrow"><button class="pbtn gold wide" type="button" id="btnAuto">▶ Run auto demo</button><button class="pbtn" type="button" id="btnReset">Reset</button><button class="pbtn" type="button" id="btnSound" aria-pressed="false">Sound: off</button></div>
+    </div>
+
+    <div class="hcard">
+      <div class="hrow"><span class="lbl">Audit log (for end-of-session reconciliation)</span></div>
+      <div class="hrow"><button class="pbtn gold wide" type="button" id="btnWinners">⇩ Export winners (members)</button><button class="pbtn" type="button" id="btnExport">⇩ Full history</button></div>
+      <div class="hint" id="expMsg">Winners: every prize with the member's MB#, plus a total per member. Full history adds every hand and this log.</div>
+      <div class="log" id="log"></div>
+    </div>
+  </section>
+
+  <!-- ============ LED WALL ============ -->
+  <section class="ledcol" aria-label="LED wall">
+    <div class="ledhead"><span id="ledCap">LED 16:9 · BC1</span><button class="pbtn" type="button" id="btnFs">Full screen</button></div>
+    <div class="ledbox" id="ledbox">
+      <div class="led-vp">
+        <canvas class="bgc" id="bg"></canvas>
+        <div class="stage" id="stage">
+          <div class="game" id="game">
+            <div class="views">
+              <section class="view idle on" id="vIdle">
+                <div class="rays"></div>
+                <div class="id-top">
+                  <div class="id-k">EVERY WEDNESDAY · BC1 &amp; BC2</div>
+                  <div class="id-t">Dragon <em>Hunt</em></div>
+                  <div class="id-s">6 wins in a row is a dragon</div>
+                </div>
+                <canvas id="idleCv" width="1824" height="410" aria-label="The dragon lights up section by section as a streak grows"></canvas>
+                <div class="id-rules" id="idRules"></div>
+              </section>
+              <section class="view" id="vLive">
+                <div class="body">
+                  <div class="lcol">
+                    <div class="feed" id="feed" data-mode="green"><img id="feedImg" src="assets/system-screen-sample.jpg" alt="Sample of the table system screen"><span class="feed-tag" id="feedTag">SYSTEM SCREEN · 16:9 · SAMPLE</span></div>
+                    <div class="hero glass" id="hero">
+                      <div class="hero-l"><div class="cap" id="heroCap">CURRENT STREAK</div><div class="sk" id="sk"></div><div class="sk-msg" id="skMsg"></div></div>
+                      <canvas id="meterCv" width="860" height="231" aria-label="Streak meter: the dragon is revealed hand by hand"></canvas>
+                    </div>
+                  </div>
+                  <div class="board glass"><div class="bh"><h2 class="gold-t">TOP HUNTERS</h2><span class="pill">TONIGHT · BC1 + BC2</span></div><div class="rlist" id="rlist"></div></div>
+                </div>
+              </section>
+            </div>
+            <div class="ticker glass"><span class="tk-k">DRAGON HUNT</span><div class="tk-w"><div class="tk-t" id="tk"></div></div></div>
+          </div>
+          <div class="ovs" id="ovs"></div>
+          <canvas class="fx" id="fx" width="1920" height="1080"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script src="js/dragon-kit.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
